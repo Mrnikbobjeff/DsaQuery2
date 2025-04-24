@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonSimplifier", "JsonSimplifier\JsonSimplifier.csproj", "{1A595D13-5167-4B5A-9A5B-47480FE2FED3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeminiQuery", "GeminiQuery\GeminiQuery.csproj", "{67A91C61-09D9-40DF-9AB0-7C4B7043165D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DsaQuery", "DsaQuery\DsaQuery.csproj", "{AE3181A0-1842-4793-9836-EC22B77DF0CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A595D13-5167-4B5A-9A5B-47480FE2FED3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A595D13-5167-4B5A-9A5B-47480FE2FED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A595D13-5167-4B5A-9A5B-47480FE2FED3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A595D13-5167-4B5A-9A5B-47480FE2FED3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67A91C61-09D9-40DF-9AB0-7C4B7043165D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67A91C61-09D9-40DF-9AB0-7C4B7043165D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67A91C61-09D9-40DF-9AB0-7C4B7043165D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67A91C61-09D9-40DF-9AB0-7C4B7043165D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE3181A0-1842-4793-9836-EC22B77DF0CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE3181A0-1842-4793-9836-EC22B77DF0CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE3181A0-1842-4793-9836-EC22B77DF0CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE3181A0-1842-4793-9836-EC22B77DF0CF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

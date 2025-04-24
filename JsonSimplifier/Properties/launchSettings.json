@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "JsonSimplifier": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\nikla\\Downloads\\DSA Phileasson saga - ingame - spielertagebuch [1032385680912949319].json\" \"C:\\Users\\nikla\\Downloads\\simplified.json\""
+    }
+  }
+}

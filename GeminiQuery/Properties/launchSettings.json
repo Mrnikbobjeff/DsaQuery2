@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GeminiQuery": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\nikla\\Downloads\\simplified.txt\""
+    }
+  }
+}
