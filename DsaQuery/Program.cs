@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 using GenerativeAI;
 using GenerativeAI.Types;
 using Newtonsoft.Json;
@@ -217,9 +218,55 @@ public record class SimpleMessage(string Message, string Author, DateTimeOffset 
 
 internal class Program
 {
-    string discordKey = "<key>"
+    private static async Task<string> DownloadDiscordMessages(string serverId, string discordKey)
+    {
+        var input = string.Empty;
+        var sb = new StringBuilder();
+        while (input != "exit")
+        {
+            var p = Process.Start(".\\Ressources/DiscordChatExporter.Cli.exe",
+                $"channels -g {serverId} -t {discordKey}");
+            await p.WaitForExitAsync();
+
+            Console.WriteLine("Gebe eine der folgenden Channel ids ein:");
+            var channelId = Console.ReadLine();
+            if (!File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    $"{channelId}.json")))
+            {
+                var p2 = Process.Start(".\\Ressources/DiscordChatExporter.Cli.exe",
+                    $" export -f Json -o {channelId}.json -t {discordKey} -c {channelId}");
+                await p2.WaitForExitAsync();
+            }
+
+            var fileContent =
+                File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    $"{channelId}.json"));
+            var coordinate = JsonConvert.DeserializeObject<Coordinate>(fileContent);
+            var messages = coordinate.Messages
+                .Select(m => new SimpleMessage(m.Content, m.Author.Nickname, DateTimeOffset.Parse(m.Timestamp)))
+                .ToList();
+            var smallOutput = JsonConvert.SerializeObject(messages);
+            sb.AppendLine(smallOutput);
+            Console.WriteLine("Write exit if you want to, stop, else do anything else");
+            input = Console.ReadLine();
+        }
+
+        return sb.ToString();
+    }
+
     private static async Task<int> Main(string[] args)
     {
+        var discordKey = "<key>";
+        if (args.Length >= 3)
+        {
+            discordKey = args[2];
+        }
+        else
+        {
+            Console.WriteLine("Gib die discordKey ein");
+            discordKey = Console.ReadLine();
+        }
+
         string serverId = null;
         if (args.Length >= 1)
         {
@@ -231,28 +278,7 @@ internal class Program
             serverId = Console.ReadLine();
         }
 
-        var p = Process.Start(".\\Ressources/DiscordChatExporter.Cli.exe",
-            $"channels -g {serverId} -t {key}");
-        await p.WaitForExitAsync();
 
-        Console.WriteLine("Gebe eine der folgenden Channel ids ein:");
-        var channelId = Console.ReadLine();
-        if (!File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                $"{channelId}.json")))
-        {
-            var p2 = Process.Start(".\\Ressources/DiscordChatExporter.Cli.exe",
-                $" export -f Json -o {channelId}.json -t {key} -c {channelId}");
-            await p2.WaitForExitAsync();
-        }
-
-        var fileContent =
-            File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                $"{channelId}.json"));
-        var coordinate = JsonConvert.DeserializeObject<Coordinate>(fileContent);
-        var messages = coordinate.Messages
-            .Select(m => new SimpleMessage(m.Content, m.Author.Nickname, DateTimeOffset.Parse(m.Timestamp)))
-            .ToList();
-        var smallOutput = JsonConvert.SerializeObject(messages);
         string? apiKey = null;
         if (args.Length > 0)
         {
@@ -269,9 +295,10 @@ internal class Program
         var chatSession = generativeModel.StartChat();
         chatSession.SystemInstruction = "ONLY answer in german";
         var request = new GenerateContentRequest();
+        var docInput = await DownloadDiscordMessages(serverId, discordKey);
         request.AddText(
             "In future queries, answer detailed questions about the provided document which represents a chat history in json format: " +
-            smallOutput);
+            docInput);
         GenerateContentResponse response = null;
         try
         {
