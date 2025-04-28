@@ -1,13 +1,15 @@
-﻿using DsaQuery;
+﻿using System.ComponentModel;
 using System.Windows.Input;
+using DsaQuery;
 
 namespace ViewModel
 {
-    public class ClearRequestCommand : ICommand
+    public class RequestChannelCommand : ICommand
+
     {
         private readonly IQueryController queryController;
 
-        public ClearRequestCommand(IQueryController queryController)
+        public RequestChannelCommand(IQueryController queryController)
         {
             this.queryController = queryController;
             queryController.PropertyChanged += QueryController_PropertyChanged;
@@ -17,17 +19,17 @@ namespace ViewModel
 
         public bool CanExecute(object? parameter)
         {
-            return string.IsNullOrEmpty(queryController.RequestMessage);
+            return !string.IsNullOrEmpty(queryController.ServerID);
         }
 
         public void Execute(object? parameter)
         {
-            queryController.ClearRequest();
+            queryController.RequestChannels();
         }
 
-        private void QueryController_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void QueryController_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == queryController.RequestMessage)
+            if (sender == queryController && e.PropertyName == nameof(queryController.ServerID))
                 CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }

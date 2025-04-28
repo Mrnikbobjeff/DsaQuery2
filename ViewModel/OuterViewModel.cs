@@ -1,33 +1,94 @@
-﻿using System.Collections.ObjectModel;
+﻿using DsaQuery;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace ViewModel
 {
-    public class OuterViewModel
+    public class OuterViewModel : INotifyPropertyChanged
     {
-        public string ServerID { get; set; } = "6454612084654254654";
+        private readonly IQueryController queryController;
 
-        public string RequestMessage { get; set; } = "Fasse mir die Geschehnisse in Fasar zusammen";
+        public OuterViewModel(IQueryController queryController)
+        {
+            RequestChannelCommand = new RequestChannelCommand(queryController);
+            ClearRequestCommand = new ClearRequestCommand(queryController);
+            SendRequestCommand = new SendRequestCommand(queryController);
+            this.queryController = queryController;
+            queryController.PropertyChanged += QueryController_PropertyChanged;
+            queryController.SimpleChannels.CollectionChanged += SimpleChannels_CollectionChanged;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public ObservableCollection<ChannelViewModel> ChannelList { get; } =
             [
-            new ChannelViewModel("ChannelNameA"),
-            new ChannelViewModel("ChannelNameB"),
-            new ChannelViewModel("ChannelNameC"),
-            new ChannelViewModel("ChannelNameD"),
+
             ];
 
-        public ICommand SendRequestCommand { get; } = new SendRequestCommand();
-        public ICommand ClearRequestCommand { get; } = new ClearRequestCommand();
+        public ICommand ClearRequestCommand { get; }
 
-        public string Result { get; } =
-            """
-            Die Chat-Historie enthält *keine* detaillierten Beschreibungen von Ereignissen in der Stadt Fasar. Fasar wird lediglich indirekt im Zusammenhang mit der Suche nach Informationen über die Gor und den ehemaligen Akademieleiter Liscom erwähnt:
+        public ICommand RequestChannelCommand { get; }
 
-            *   **11. Rondra 1008 BF:** Während Kergil die Magierakademie in Khunchom besucht, erfährt er, dass Liscom, der ehemalige Akademieleiter in Fasar, in Ungnade gefallen und aus der Akademie vertrieben wurde. Es gibt Gerüchte, dass er nun mit Sklavenhändlern in der Gor zusammenarbeitet und Borbaradianer sein soll. Außerdem soll er von Spinnern aus Selem und einem Zwerg begleitet werden.
+        public string RequestMessage
+        {
+            get
+            {
+                return queryController.RequestMessage;
+            }
+            set
+            {
+                if (value != queryController.RequestMessage)
+                {
+                    queryController.RequestMessage = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
-            Das ist die einzige Erwähnung von Fasar und Liscom in den bereitgestellten Daten. Um eine Zusammenfassung der Geschehnisse in Fasar zu geben, bräuchte ich weitere Informationen.
-            """
-            ;
+        public string Result => queryController.Result;
+
+        public ICommand SendRequestCommand { get; }
+
+        public string ServerID
+        {
+            get
+            {
+                return queryController.ServerID;
+            }
+            set
+            {
+                if (value != queryController.ServerID)
+                {
+                    queryController.ServerID = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private void QueryController_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (sender != queryController)
+                throw new Exception();
+
+            if (e.PropertyName == nameof(queryController.ServerID))
+                OnPropertyChanged(nameof(ServerID));
+            if (e.PropertyName == nameof(queryController.Result))
+                OnPropertyChanged(nameof(Result));
+        }
+
+        private void SimpleChannels_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add && e.NewItems.Count == 1)
+                ChannelList.Add(new ChannelViewModel((SimpleChannel)e.NewItems[0]));
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+                ChannelList.Clear();
+        }
     }
 }

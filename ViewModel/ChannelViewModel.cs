@@ -1,8 +1,21 @@
-﻿namespace ViewModel
+﻿using DsaQuery;
+
+namespace ViewModel
 {
-    public class ChannelViewModel(string name)
+    public class ChannelViewModel(SimpleChannel simpleChannel)
     {
-        public string Name { get; } = name;
-        public bool IsSelected { get; set; } = false;
+        public bool IsSelected
+        {
+            get
+            {
+                return simpleChannel.IsSelected;
+            }
+            set
+            {
+                simpleChannel.IsSelected = value;
+            }
+        }
+
+        public string Name => simpleChannel.Name;
     }
 }
