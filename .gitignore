@@ -398,3 +398,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+
+DsaQuery/Properties/launchSettings.json
+
+*.ncrunch*
+WpfApplication/app.config
